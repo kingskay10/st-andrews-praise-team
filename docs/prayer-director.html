@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prayer Director | St Andrews CCAP Praise Team</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
+  <script src="js/config.js"></script>
+  <script src="js/shared.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body data-page="prayer-director">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div id="site-header"></div>
+  <main class="page-shell" id="main-content">
+    <div class="dash-header"><h1>Prayer Director</h1><span class="badge">Prayer Director</span></div>
+    <div id="page-status" class="alert" role="status" hidden></div>
+    <section class="grid dashboard-grid">
+      <article class="card">
+        <h2>Verse of the Day</h2>
+        <form id="prayer-verse-form">
+          <div class="form-group"><label for="prayer-verse">Bible verse</label><textarea id="prayer-verse" name="verse_text" required maxlength="5000"></textarea></div>
+          <button class="btn btn-primary" type="submit">Publish Today's Verse</button>
+        </form>
+        <div id="today-verse" class="empty-state" aria-live="polite"></div>
+      </article>
+      <article class="card">
+        <h2>Prayer Points for Today</h2>
+        <form id="prayer-point-form">
+          <div class="form-group"><label for="prayer-point">Prayer point</label><textarea id="prayer-point" name="prayer_point" required maxlength="2000"></textarea></div>
+          <button class="btn btn-success" type="submit">Add Prayer Point</button>
+        </form>
+        <ul id="director-prayer-points" class="meta-list"></ul>
+      </article>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>

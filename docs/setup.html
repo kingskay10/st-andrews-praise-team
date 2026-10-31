@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>First Chair Setup | St Andrews CCAP Praise Team</title><link rel="stylesheet" href="styles.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script><script src="js/config.js"></script><script src="js/shared.js" defer></script><script src="js/app.js" defer></script></head>
+<body data-page="setup"><a class="skip-link" href="#main-content">Skip to content</a><div id="site-header"></div><main class="page-shell" id="main-content"><article class="card legal-page"><h1>First Chair Setup</h1><p>Create the first account in Supabase Authentication, then assign the chair role once in the SQL Editor. This privileged step is intentionally not exposed to the public website.</p><ol><li>In Supabase, open Authentication &gt; Users &gt; Add user and create the chair's email/password account.</li><li>Open SQL Editor and run the following, replacing the email with the chair's account email:</li></ol><pre><code>update public.roles
+set role = 'chair'
+where user_id = (
+  select id from public.profiles
+  where email = 'chair@example.org'
+);</code></pre><p>Then sign in at <a href="login.html">Member Login</a>. Never put a service-role key into this site.</p></article></main><div id="site-footer"></div></body></html>

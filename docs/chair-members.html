@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage Members | St Andrews CCAP Praise Team</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
+  <script src="js/config.js"></script>
+  <script src="js/shared.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body data-page="chair-members">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div id="site-header"></div>
+  <main class="page-shell" id="main-content">
+    <div class="dash-header"><h1>Manage Members</h1><span class="badge">Chair</span></div>
+    <nav class="dashboard-tabs" aria-label="Chair workspace">
+      <a href="chair-members.html" aria-current="page">Members</a>
+      <a href="chair.html">Operations</a>
+    </nav>
+    <div id="page-status" class="alert" role="status" hidden></div>
+    <section class="card">
+      <h2>Invite Member</h2>
+      <p>The member receives an email invitation and chooses their own password. They sign in with the email entered here.</p>
+      <form id="invite-member-form">
+        <div class="form-grid">
+          <div class="form-group"><label for="invite-name">Name</label><input id="invite-name" name="name" required maxlength="150"></div>
+          <div class="form-group"><label for="invite-email">Email</label><input id="invite-email" name="email" type="email" required maxlength="150"></div>
+          <div class="form-group"><label for="invite-role">Role</label><select id="invite-role" name="role" required><option value="member">Member</option><option value="secretary">Secretary</option><option value="music_director">Music Director</option><option value="band_director">Band/Worship Director</option><option value="prayer_director">Prayer Director</option><option value="chair">Chair</option></select></div>
+          <div class="form-group"><label for="invite-position">Position</label><input id="invite-position" name="position" maxlength="100"></div>
+          <div class="form-group"><label for="invite-phone">Phone</label><input id="invite-phone" name="phone" type="tel" maxlength="30"></div>
+          <div class="form-group"><label for="invite-location">Location</label><input id="invite-location" name="location" maxlength="150"></div>
+          <div class="form-group"><label for="invite-social">Social Media</label><input id="invite-social" name="social_media" maxlength="150"></div>
+          <div class="form-group"><label for="invite-marital">Marital Status</label><select id="invite-marital" name="marital_status"><option value="">Not specified</option><option value="single">Single</option><option value="married">Married</option></select></div>
+        </div>
+        <button class="btn btn-primary" type="submit">Send Invitation</button>
+      </form>
+    </section>
+    <section class="card" id="edit-member-section" hidden>
+      <h2>Edit Member</h2>
+      <form id="edit-member-form">
+        <input type="hidden" name="id">
+        <div class="form-grid">
+          <div class="form-group"><label for="edit-name">Name</label><input id="edit-name" name="name" required maxlength="150"></div>
+          <div class="form-group"><label for="edit-email">Email</label><input id="edit-email" name="email" type="email" readonly></div>
+          <div class="form-group"><label for="edit-role">Role</label><select id="edit-role" name="role"><option value="member">Member</option><option value="secretary">Secretary</option><option value="music_director">Music Director</option><option value="band_director">Band/Worship Director</option><option value="prayer_director">Prayer Director</option><option value="chair">Chair</option></select></div>
+          <div class="form-group"><label for="edit-position">Position</label><input id="edit-position" name="position"></div>
+          <div class="form-group"><label for="edit-phone">Phone</label><input id="edit-phone" name="phone" type="tel"></div>
+          <div class="form-group"><label for="edit-location">Location</label><input id="edit-location" name="location"></div>
+          <div class="form-group"><label for="edit-social">Social Media</label><input id="edit-social" name="social_media"></div>
+          <div class="form-group"><label for="edit-marital">Marital Status</label><select id="edit-marital" name="marital_status"><option value="">Not specified</option><option value="single">Single</option><option value="married">Married</option></select></div>
+        </div>
+        <button class="btn btn-primary" type="submit">Save Changes</button>
+        <button class="btn btn-secondary" type="reset" id="cancel-edit-member">Cancel</button>
+      </form>
+    </section>
+    <section class="card">
+      <h2>Team Members</h2>
+      <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Position</th><th>Phone</th><th>Action</th></tr></thead><tbody id="managed-members"></tbody></table></div>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Local credentials and environment files
+.env
+.env.*
+!.env.example
+**/config.local.php
+*.pem
+*.key
+*service-role*
+
+# Member uploads and private data must never be published
+/uploads/
+*.sql.backup
+*.sql.dump

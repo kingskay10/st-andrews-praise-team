@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Updates, events, prayer points, and reports from the St Andrews CCAP Praise Team.">
+  <title>St Andrews CCAP Praise Team</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
+  <script src="js/config.js"></script>
+  <script src="js/shared.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body data-page="home">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div id="site-header"></div>
+  <main class="page-shell" id="main-content">
+    <section class="hero">
+      <h1>Welcome to the Praise Team</h1>
+      <p>Stay connected with updates, prayer points, events, and published reports from the church worship family.</p>
+    </section>
+    <div id="page-status" class="alert" role="status" hidden></div>
+    <section class="grid home-grid">
+      <article class="card verse-card"><p class="verse-label">Daily reflection</p><h2>Verse of the Day</h2><div id="daily-verse" class="empty-state">Loading today's verse...</div></article>
+      <article class="card"><h2>Upcoming Events</h2><div id="upcoming-events" class="empty-state">Loading events...</div></article>
+      <article class="card"><h2>Latest Updates</h2><div id="latest-updates" class="empty-state">Loading updates...</div></article>
+      <article class="card"><h2>Prayer Points for Today</h2><div id="daily-prayer-points" class="empty-state">Loading prayer points...</div></article>
+      <article class="card"><h2>Past Events</h2><div id="past-events" class="empty-state">Loading events...</div></article>
+      <article class="card"><h2>Published Reports</h2><div id="published-reports" class="empty-state">Loading reports...</div></article>
+    </section>
+    <section class="card faq-section">
+      <h2>Frequently Asked Questions</h2>
+      <details><summary>Who can access the team portal?</summary><p>Registered praise team members can access private areas according to their assigned role.</p></details>
+      <details><summary>Who approves department reports?</summary><p>Reports submitted by the secretary or directors are reviewed and published by the chair.</p></details>
+      <details><summary>How do I request a data change or removal?</summary><p>Use the Contact button or the administrator's church contact process to request an update or removal.</p></details>
+    </section>
+  </main>
+  <div id="site-footer"></div>
+</body>
+</html>
