@@ -37,10 +37,10 @@ The active GitHub Pages site is a static HTML/CSS/vanilla JavaScript frontend in
 
 7. Sign in at `docs/login.html`. The chair can invite members and assign roles from **Manage Members** after deploying the invitation function described below.
 8. In **Authentication > Settings**, disable public sign-ups if only chair-invited team accounts should be allowed. Configure custom SMTP under Authentication settings so invitation emails can be delivered to members.
-9. In **Authentication > URL Configuration**, set the Site URL to `https://USERNAME.github.io/REPOSITORY-NAME` (no trailing slash) and add `https://USERNAME.github.io/REPOSITORY-NAME/**` to the redirect URL allow-list. This permits invitation links to return to `set-password.html`.
+9. In **Authentication > URL Configuration**, set the Site URL to `https://kingskay10.github.io/st-andrews-praise-team` (no trailing slash) and add `https://kingskay10.github.io/st-andrews-praise-team/**` to the redirect URL allow-list. This permits invitation links to return to `set-password.html`.
 10. Commit and push the project to the `main` branch on GitHub.
 11. In GitHub, open **Settings > Pages > Build and deployment**, choose **Deploy from a branch**, select branch **main** and folder **/docs**, then select **Save**.
-12. After the Pages deployment completes, visit `https://USERNAME.github.io/REPOSITORY-NAME/` (replace both uppercase segments with your GitHub username and repository name).
+12. After the Pages deployment completes, visit `https://kingskay10.github.io/st-andrews-praise-team/`.
 
 GitHub Pages is static hosting; it does not execute PHP. The public website uses only the Supabase anon key, and database/storage RLS is the security boundary. The chair's initial role is assigned in Supabase SQL Editor because a browser-only client must not be allowed to self-assign privileged roles.
 
@@ -53,9 +53,9 @@ For the already-created Supabase project, do not rerun the base schema. In the S
 
 Deploy the chair invitation function from PowerShell in this repository:
 
-1. Install the Supabase CLI, run `supabase login`, then link the project with `supabase link --project-ref etspiinuvofwwimcuded`.
-2. Set the Pages URL for invitation redirects: `supabase secrets set SITE_URL=https://USERNAME.github.io/REPOSITORY-NAME` (no trailing slash).
-3. Deploy the function with `supabase functions deploy invite-member --project-ref etspiinuvofwwimcuded`.
+1. Install the Supabase CLI, run `supabase login`, then link the project with `supabase link --project-ref tkrhbfocezqyjebohvkz`.
+2. Set the Pages URL for invitation redirects: `supabase secrets set SITE_URL=https://kingskay10.github.io/st-andrews-praise-team` (no trailing slash).
+3. Deploy the function with `supabase functions deploy invite-member --project-ref tkrhbfocezqyjebohvkz`.
 4. Commit and push the updated `docs/`, `supabase/`, and README changes, then wait for GitHub Pages to redeploy.
 
 The chair's **Manage Members** tab sends an email invitation, saves the selected role and profile, and directs the invitee to set their own password. They sign in using the email entered by the chair. Configure custom SMTP in Supabase Auth for invitations to arbitrary member addresses. Assign **Prayer Director** through the invitation form or member edit action. The Prayer Director dashboard publishes the daily verse and today's prayer points, which appear on the public homepage for that date.
