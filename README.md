@@ -4,9 +4,9 @@ The active GitHub Pages site is a static HTML/CSS/vanilla JavaScript frontend in
 
 ## Features found in the original PHP application
 
-- Public home page with today's verse, upcoming/past events, recent updates, published department reports, and FAQs.
+- Public home page with today's verse, upcoming/past events, photo highlights, recent updates, published department reports, and FAQs.
 - Email/password login, logout, and role-based dashboard routing for chair, secretary, music director, band/worship director, prayer director, and member.
-- Member-only directory and community photo gallery with likes, comments, replies, sharing, and copy-link actions.
+- Member-only directory and community photo gallery with likes, comments, replies, sharing, and copy-link actions. Shared-gallery uploads appear publicly; profile and member workspace photos remain private.
 - Member workspace for profile updates and profile/gallery photo uploads.
 - Chair tools for the directory, event creation with poster/attachment, public updates, and approving department reports.
 - Secretary-only finance records for monthly contributions and offerings, plus financial report submission.
@@ -17,10 +17,11 @@ The active GitHub Pages site is a static HTML/CSS/vanilla JavaScript frontend in
 ## Supabase setup
 
 1. Create a Supabase project at [supabase.com](https://supabase.com/). Choose a strong database password and keep it private.
-2. In the Supabase project, open **SQL Editor**, create a new query, paste all of `supabase/schema.sql`, and run it once. It creates the PostgreSQL tables, auth profile/role trigger, row-level security policies, and the two storage buckets.
+2. In the Supabase project, open **SQL Editor**, create a new query, paste all of `supabase/schema.sql`, and run it once. It creates the PostgreSQL tables, auth profile/role trigger, row-level security policies, and the storage buckets.
 3. In **Storage**, confirm these buckets exist and have these settings:
    - `event-media`: public, 10 MB maximum; JPEG, PNG, WEBP, PDF, DOC, and DOCX.
    - `member-media`: private, 10 MB maximum; JPEG, PNG, and WEBP.
+   - `gallery-public`: public, 10 MB maximum; JPEG, PNG, and WEBP. Only photos uploaded through the shared gallery use this bucket.
    The SQL applies storage object policies; do not make `member-media` public.
 4. Open **Project Settings > API**. Copy the Project URL and the `anon`/publishable public key into `docs/js/config.js`. Do not put a `service_role` or secret key in any file under `docs/` or in browser JavaScript.
 5. Create the first chair account in **Authentication > Users > Add user**. Use the chair's name, email, and a long unique password. The schema trigger creates a profile and default `member` role.
@@ -46,10 +47,11 @@ GitHub Pages is static hosting; it does not execute PHP. The public website uses
 
 ## Enable Member Invitations and Prayer Director
 
-For the already-created Supabase project, do not rerun the base schema. In the Supabase SQL Editor, run these as two separate queries, in order, and wait for success after each:
+For the already-created Supabase project, do not rerun the base schema. In the Supabase SQL Editor, run these as separate queries, in order, and wait for success after each:
 
 1. `supabase/migrations/202610270001_add_prayer_director_role.sql`
 2. `supabase/migrations/202610270002_prayer_points_and_policies.sql`
+3. `supabase/migrations/202610310001_public_gallery_photos.sql`
 
 Deploy the chair invitation function from PowerShell in this repository:
 

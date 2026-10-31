@@ -36,7 +36,7 @@
   };
   const signedUrl = async (bucket, path) => {
     if (!path || !supabase) return '';
-    if (bucket === 'event-media') return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+    if (['event-media', 'gallery-public'].includes(bucket)) return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
     const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
     if (error) return '';
     return data.signedUrl;

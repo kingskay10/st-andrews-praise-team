@@ -109,6 +109,8 @@ create table public.gallery_photos (
   source_type public.gallery_source_type not null default 'member',
   source_id uuid,
   image_path text not null,
+  storage_bucket text not null default 'member-media'
+    check (storage_bucket in ('event-media', 'member-media', 'gallery-public')),
   caption text,
   created_at timestamptz not null default now()
 );
@@ -183,6 +185,11 @@ create view public.events_public with (security_invoker = false) as
   select id, title, description, event_date, location, poster_path, attachment_path, created_at, updated_at
   from public.events;
 
+create view public.gallery_public with (security_invoker = false) as
+  select id, image_path, storage_bucket, caption, created_at
+  from public.gallery_photos
+  where storage_bucket in ('event-media', 'gallery-public');
+
 create view public.department_reports_public with (security_invoker = false) as
   select id, department, title, summary, content, status, published, published_at, created_at, updated_at
   from public.department_reports
@@ -236,7 +243,7 @@ alter table public.daily_prayer_points enable row level security;
 grant usage on schema public to anon, authenticated;
 grant select on public.events, public.department_reports, public.updates, public.daily_verses to authenticated;
 grant select on public.daily_prayer_points to authenticated;
-grant select on public.events_public, public.department_reports_public, public.daily_verses_public, public.daily_prayer_points_public, public.updates_public to anon, authenticated;
+grant select on public.events_public, public.department_reports_public, public.daily_verses_public, public.daily_prayer_points_public, public.updates_public, public.gallery_public to anon, authenticated;
 grant select, insert, update, delete on public.profiles, public.roles, public.events, public.updates, public.finance_records, public.department_reports, public.department_music, public.department_band, public.member_photos, public.gallery_photos, public.gallery_photo_likes, public.gallery_comments, public.gallery_comment_likes, public.daily_verses, public.daily_prayer_points to authenticated;
 revoke insert, update, delete on public.profiles from authenticated;
 grant update (name, marital_status, phone, social_media, location, position, photo_path) on public.profiles to authenticated;
@@ -311,10 +318,14 @@ create policy "prayer director deletes own prayer points" on public.daily_prayer
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values
   ('event-media', 'event-media', true, 10485760, array['image/jpeg','image/png','image/webp','application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document']),
-  ('member-media', 'member-media', false, 10485760, array['image/jpeg','image/png','image/webp'])
+  ('member-media', 'member-media', false, 10485760, array['image/jpeg','image/png','image/webp']),
+  ('gallery-public', 'gallery-public', true, 10485760, array['image/jpeg','image/png','image/webp'])
 on conflict (id) do update set public = excluded.public, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
 
 create policy "public reads event media" on storage.objects for select to anon, authenticated using (bucket_id = 'event-media');
+create policy "team uploads public gallery media" on storage.objects for insert to authenticated with check (bucket_id = 'gallery-public' and public.is_team_member() and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "members update own public gallery media" on storage.objects for update to authenticated using (bucket_id = 'gallery-public' and public.is_team_member() and (storage.foldername(name))[1] = auth.uid()::text) with check (bucket_id = 'gallery-public' and public.is_team_member() and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "members delete own public gallery media" on storage.objects for delete to authenticated using (bucket_id = 'gallery-public' and public.is_team_member() and (storage.foldername(name))[1] = auth.uid()::text);
 create policy "chair uploads event media" on storage.objects for insert to authenticated with check (bucket_id = 'event-media' and public.current_app_role() = 'chair');
 create policy "chair updates event media" on storage.objects for update to authenticated using (bucket_id = 'event-media' and public.current_app_role() = 'chair') with check (bucket_id = 'event-media' and public.current_app_role() = 'chair');
 create policy "chair deletes event media" on storage.objects for delete to authenticated using (bucket_id = 'event-media' and public.current_app_role() = 'chair');

@@ -82,16 +82,27 @@
     }
 
     const now = new Date().toISOString();
-    const [upcoming, past, updates, reports, prayerPoints] = await Promise.all([
+    const [upcoming, past, updates, reports, prayerPoints, galleryPhotos] = await Promise.all([
       supabase.from('events_public').select('*').gte('event_date', now).order('event_date').limit(3),
       supabase.from('events_public').select('*').lt('event_date', now).order('event_date', { ascending: false }).limit(3),
       supabase.from('updates_public').select('title,content,author_name,published_at,created_at').order('published_at', { ascending: false }).order('created_at', { ascending: false }).limit(5),
       supabase.from('department_reports_public').select('department,title,summary,updated_at,created_at').order('published_at', { ascending: false }).order('created_at', { ascending: false }).limit(6),
-      supabase.from('daily_prayer_points_public').select('id,prayer_point,created_at').eq('prayer_date', today).order('created_at', { ascending: false })
+      supabase.from('daily_prayer_points_public').select('id,prayer_point,created_at').eq('prayer_date', today).order('created_at', { ascending: false }),
+      supabase.from('gallery_public').select('caption,created_at,image_path,storage_bucket').order('created_at', { ascending: false }).limit(6)
     ]);
-    for (const result of [upcoming, past, updates, reports, prayerPoints]) if (result.error) fail(result.error);
+    for (const result of [upcoming, past, updates, reports, prayerPoints, galleryPhotos]) if (result.error) fail(result.error);
     await renderEventList(document.getElementById('upcoming-events'), upcoming.data || []);
     await renderEventList(document.getElementById('past-events'), past.data || [], true);
+
+    const galleryTarget = document.getElementById('home-gallery');
+    if (galleryPhotos.error) showEmpty(galleryTarget, 'Photo highlights could not be loaded.');
+    else {
+      const highlights = await Promise.all((galleryPhotos.data || []).map(async (photo) => {
+        const url = await signedUrl(photo.storage_bucket, photo.image_path);
+        return url ? `<figure class="home-gallery-item"><img src="${e(url)}" alt="${e(photo.caption || 'Praise team gallery photo')}"><figcaption>${photo.caption ? `<strong>${e(photo.caption)}</strong>` : ''}<small>${e(dateOnly(photo.created_at?.slice(0, 10)))}</small></figcaption></figure>` : '';
+      }));
+      galleryTarget.innerHTML = highlights.join('') || '<p class="empty-state">No public photo highlights yet.</p>';
+    }
 
     const updateTarget = document.getElementById('latest-updates');
     if (!updates.data?.length) showEmpty(updateTarget, 'No updates published yet.');
@@ -264,7 +275,7 @@
         if (updateError) return fail(updateError);
       }
       if (posterPath) {
-        const { error: galleryError } = await supabase.from('gallery_photos').insert({ uploader_id: session.user.id, source_type: 'event', source_id: data.id, image_path: posterPath, caption: values.title });
+        const { error: galleryError } = await supabase.from('gallery_photos').insert({ uploader_id: session.user.id, source_type: 'event', source_id: data.id, image_path: posterPath, storage_bucket: 'event-media', caption: values.title });
         if (galleryError) return fail(galleryError);
       }
       form.reset();
@@ -439,7 +450,7 @@
       if (uploaded.error) return showStatus(uploaded.error, 'danger');
       const { error: saveError } = await supabase.from('profiles').update({ photo_path: uploaded.path }).eq('id', session.user.id);
       if (saveError) return fail(saveError);
-      await supabase.from('gallery_photos').insert({ uploader_id: session.user.id, source_type: 'member', source_id: session.user.id, image_path: uploaded.path, caption: 'Profile photo' });
+      await supabase.from('gallery_photos').insert({ uploader_id: session.user.id, source_type: 'member', source_id: session.user.id, image_path: uploaded.path, storage_bucket: 'member-media', caption: 'Profile photo' });
       showStatus('Profile picture updated.', 'success');
       const photoUrl = await signedUrl('member-media', uploaded.path);
       document.getElementById('profile-view').innerHTML = `<img src="${e(photoUrl)}" alt="Profile photo" class="profile-avatar"><p><strong>${e(profile.name)}</strong></p><p>${e(roleLabel(session.role))}</p>`;
@@ -470,7 +481,7 @@
       if (uploaded.error) return showStatus(uploaded.error, 'danger');
       const { error: photoError } = await supabase.from('member_photos').insert({ user_id: session.user.id, image_path: uploaded.path });
       if (photoError) return fail(photoError);
-      const { error: galleryError } = await supabase.from('gallery_photos').insert({ uploader_id: session.user.id, source_type: 'member', source_id: session.user.id, image_path: uploaded.path, caption: 'Member photo' });
+      const { error: galleryError } = await supabase.from('gallery_photos').insert({ uploader_id: session.user.id, source_type: 'member', source_id: session.user.id, image_path: uploaded.path, storage_bucket: 'member-media', caption: 'Member photo' });
       if (galleryError) return fail(galleryError);
       showStatus('Photo added to your gallery.', 'success');
       form.reset();
@@ -546,7 +557,7 @@
     const commentLikes = commentLikesResult.data || [];
     const commentAuthors = await profileNameMap(comments.map((comment) => comment.user_id));
     const cards = await Promise.all(photos.map(async (photo) => {
-      const url = await signedUrl(photo.source_type === 'event' ? 'event-media' : 'member-media', photo.image_path);
+      const url = await signedUrl(photo.storage_bucket || (photo.source_type === 'event' ? 'event-media' : 'member-media'), photo.image_path);
       if (!url) return '';
       const photoComments = comments.filter((item) => item.photo_id === photo.id);
       const topLevel = photoComments.filter((item) => !item.parent_comment_id);
@@ -592,9 +603,9 @@
       event.preventDefault();
       const file = form.elements.photo.files[0];
       if (!file) return showStatus('Choose a photo first.', 'danger');
-      const uploaded = await uploadFile('member-media', file, session.user.id, 'gallery');
+      const uploaded = await uploadFile('gallery-public', file, session.user.id, 'gallery');
       if (uploaded.error) return showStatus(uploaded.error, 'danger');
-      const { error } = await supabase.from('gallery_photos').insert({ uploader_id: session.user.id, source_type: 'member', source_id: session.user.id, image_path: uploaded.path, caption: form.elements.caption.value.trim() || null });
+      const { error } = await supabase.from('gallery_photos').insert({ uploader_id: session.user.id, source_type: 'member', source_id: session.user.id, image_path: uploaded.path, storage_bucket: 'gallery-public', caption: form.elements.caption.value.trim() || null });
       if (error) return fail(error);
       form.reset();
       showStatus('Photo added to the team gallery.', 'success');
