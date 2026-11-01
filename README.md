@@ -6,7 +6,7 @@ The active GitHub Pages site is a static HTML/CSS/vanilla JavaScript frontend in
 
 - Public home page with today's verse, upcoming/past events, photo highlights, recent updates, published department reports, and FAQs.
 - Email/password login, logout, and role-based dashboard routing for chair, secretary, music director, band/worship director, prayer director, and member.
-- Member-only directory and community photo gallery with likes, comments, replies, sharing, and copy-link actions. Shared-gallery uploads appear publicly; profile and member workspace photos remain private.
+- Member-only directory and interactive photo gallery with likes, comments, replies, sharing, and copy-link actions. Recent shared-gallery uploads appear on the public homepage; profile and member workspace photos remain private.
 - Member workspace for profile updates and profile/gallery photo uploads.
 - Chair tools for the directory, event creation with poster/attachment, public updates, and approving department reports.
 - Secretary-only finance records for monthly contributions and offerings, plus financial report submission.
